@@ -24,7 +24,7 @@ const Todo = () => {
         </div>
 
         {/* tasks */}
-        <div className='flex flex-col '>
+        <div className=''>
             <TodoItems text="Task 1"/>
             <TodoItems text="Task 2"/>
         </div>
