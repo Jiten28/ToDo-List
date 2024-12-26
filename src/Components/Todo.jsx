@@ -59,7 +59,7 @@ const Todo = () => {
         </div>
 
         {/* tasks */}
-        <div className=''>
+        <div >
             {todoList.map((item, index) => {
                 return <TodoItems key={index} 
                 text={item.text} id={item.id} isComplete={item.isComplete}
