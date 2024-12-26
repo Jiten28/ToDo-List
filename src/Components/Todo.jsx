@@ -5,7 +5,8 @@ import { use } from 'react';
 
 const Todo = () => {
 
-    const[todoList, setTodoList] = useState([]);
+    const[todoList, setTodoList] = useState(localStorage.getItem('todoApp') ? 
+    JSON.parse(localStorage.getItem('todoApp')) : []);
 
     const inputRef = useRef();
     const add = () => {
