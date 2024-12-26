@@ -9,7 +9,7 @@ const TodoItems = ({text, id, isComplete, deleteTodo, toggleComplete}) => {
                     bg-blue-100 rounded-lg p-2 '>
         <div onClick={() => {toggleComplete(id)}} className='flex flex-1 items-center cursor-pointer'>
             <img src={isComplete ? tick : not_tick} alt="" className='w-7'/>
-            <p className={`'ml-4 font-medium ' 
+            <p className={`' ml-4 font-medium ' 
               ${isComplete ? 'line-through decoration-slate-600 decoration-auto' : ' '}`}>
                 {text}
             </p>
