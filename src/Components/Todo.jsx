@@ -55,7 +55,7 @@ const Todo = () => {
             <input ref={inputRef} type='text' className=' border-0 outline-none flex-1 
             bg-transparent h-14 pl-6 pr-2 placeholder:text-slate-600' 
             placeholder='Add a task' />
-            <button onClick={add} className='border-none rounded-full bg-orange-600 w-32
+            <button onClick={add} className='border-none rounded-full bg-orange-600 hover:bg-orange-700 w-32
             h-14 text-white font-medium cursor-pointer'>Add +</button>
         </div>
 
