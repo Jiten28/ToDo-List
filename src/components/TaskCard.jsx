@@ -6,13 +6,12 @@ import PriorityBadge from "./PriorityBadge";
 
 export default function TaskCard({ task, onToggle, onDelete }) {
   return (
-    <div className="flex items-center gap-3 bg-blue-100 rounded-lg p-3 my-2">
+    <div className="flex items-center gap-3 bg-blue-100 rounded-lg p-3 my-2 min-w-0">
       <button
         type="button"
         onClick={() => onToggle(task.id)}
-        className="flex-shrink-0"
         aria-pressed={task.isComplete}
-        aria-label={task.isComplete ? "Mark as incomplete" : "Mark as complete"}
+        className="flex-shrink-0"
       >
         <img src={task.isComplete ? tick : not_tick} alt="" className="w-7" />
       </button>
@@ -36,11 +35,9 @@ export default function TaskCard({ task, onToggle, onDelete }) {
       <button
         type="button"
         onClick={() => onDelete(task.id)}
-        className="p-2 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300"
-        aria-label="Delete task"
-        title="Delete"
+        className="p-2 rounded-md hover:bg-red-50 focus:ring-2 focus:ring-red-300"
       >
-        <img src={delete_icon} alt="" className="w-4" />
+        <img src={delete_icon} alt="delete" className="w-4" />
       </button>
     </div>
   );

@@ -12,9 +12,8 @@ export const isThisWeek = (iso) => {
   const d = new Date(iso);
   const now = new Date();
 
-  // set to Monday 00:00 of this week
-  const day = now.getDay(); // 0..6 (Sun..Sat)
-  const diffToMonday = (day + 6) % 7; // number of days since Monday
+  const day = now.getDay(); // 0=Sun
+  const diffToMonday = (day + 6) % 7;
   const monday = new Date(now);
   monday.setHours(0, 0, 0, 0);
   monday.setDate(now.getDate() - diffToMonday);
@@ -26,7 +25,18 @@ export const isThisWeek = (iso) => {
 };
 
 export const filterByDateRange = (tasks, range) => {
-  if (range === "today") return tasks.filter(t => isToday(t.createdAt));
-  if (range === "week") return tasks.filter(t => isThisWeek(t.createdAt));
+  if (range === "today") return tasks.filter((t) => isToday(t.createdAt));
+  if (range === "week") return tasks.filter((t) => isThisWeek(t.createdAt));
   return tasks;
+};
+
+export const filterByCustomRange = (tasks, start, end) => {
+  if (!start || !end) return tasks;
+  const s = new Date(start);
+  const e = new Date(end);
+  e.setHours(23, 59, 59, 999);
+  return tasks.filter((t) => {
+    const d = new Date(t.createdAt);
+    return d >= s && d <= e;
+  });
 };

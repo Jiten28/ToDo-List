@@ -1,13 +1,14 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 const TaskContext = createContext();
-
-const STORAGE_KEY = "todoApp.v2";
+const STORAGE_KEY = "todoApp.v3";
 
 const defaultFilters = {
-  dateRange: "all",     // "all" | "today" | "week"
-  priority: "all",      // "all" | "low" | "medium" | "high"
-  search: "",           // substring match on text
+  dateRange: "all",     // all | today | week | custom
+  customStart: null,
+  customEnd: null,
+  priority: "all",      // all | low | medium | high | critical
+  search: "",
 };
 
 export function TaskProvider({ children }) {
@@ -22,7 +23,7 @@ export function TaskProvider({ children }) {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  // ---- actions ----
+  // actions
   const addTask = (text, priority = "low") => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -30,27 +31,28 @@ export function TaskProvider({ children }) {
       id: crypto.randomUUID?.() ?? Date.now(),
       text: trimmed,
       isComplete: false,
-      priority,                 // "low" | "medium" | "high"
+      priority,
       createdAt: new Date().toISOString(),
     };
-    setTasks(prev => [...prev, newTask]);
+    setTasks((prev) => [...prev, newTask]);
   };
 
-  const deleteTask = (id) => setTasks(prev => prev.filter(t => t.id !== id));
-
+  const deleteTask = (id) => setTasks((prev) => prev.filter((t) => t.id !== id));
   const toggleComplete = (id) =>
-    setTasks(prev => prev.map(t => (t.id === id ? { ...t, isComplete: !t.isComplete } : t)));
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, isComplete: !t.isComplete } : t
+      )
+    );
+  const clearCompleted = () => setTasks((prev) => prev.filter((t) => !t.isComplete));
 
-  const clearCompleted = () => setTasks(prev => prev.filter(t => !t.isComplete));
+  const updateFilters = (patch) => setFilters((prev) => ({ ...prev, ...patch }));
 
-  const updateFilters = (patch) => setFilters(prev => ({ ...prev, ...patch }));
-
-  // ---- persistence ----
+  // persistence
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }, [tasks]);
 
-  // ---- derived state (filtered list) ----
   const value = useMemo(
     () => ({
       tasks,

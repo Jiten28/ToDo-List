@@ -3,7 +3,7 @@ import todo_icon from "../assets/todo_icon.png";
 import TaskCard from "../components/TaskCard";
 import FilterBar from "../components/FilterBar";
 import { useTasks } from "../context/TaskContext";
-import { filterByDateRange } from "../utils/dateUtils";
+import { filterByDateRange, filterByCustomRange } from "../utils/dateUtils";
 
 export default function Home() {
   const { tasks, addTask, toggleComplete, deleteTask, filters } = useTasks();
@@ -21,15 +21,23 @@ export default function Home() {
   };
 
   const visibleTasks = useMemo(() => {
-    const byDate = filterByDateRange(tasks, filters.dateRange);
-    const byPriority = filters.priority === "all" ? byDate : byDate.filter(t => t.priority === filters.priority);
+    let byDate = filterByDateRange(tasks, filters.dateRange);
+    if (filters.dateRange === "custom") {
+      byDate = filterByCustomRange(tasks, filters.customStart, filters.customEnd);
+    }
+    const byPriority =
+      filters.priority === "all"
+        ? byDate
+        : byDate.filter((t) => t.priority === filters.priority);
     const bySearch = filters.search
-      ? byPriority.filter(t => t.text.toLowerCase().includes(filters.search.toLowerCase()))
+      ? byPriority.filter((t) =>
+          t.text.toLowerCase().includes(filters.search.toLowerCase())
+        )
       : byPriority;
     return bySearch;
   }, [tasks, filters]);
 
-  const remaining = tasks.filter(t => !t.isComplete).length;
+  const remaining = tasks.filter((t) => !t.isComplete).length;
 
   return (
     <main className="bg-blue-400 place-self-center w-11/12 max-w-md flex flex-col p-6 md:p-7 min-h-[560px] rounded-lg shadow-lg mx-auto">
@@ -42,45 +50,40 @@ export default function Home() {
       {/* Add form */}
       <section className="mt-6">
         <div className="flex items-stretch gap-2 bg-blue-200 rounded-full p-1">
-          <label className="sr-only" htmlFor="new-task">Add a task</label>
           <input
-            id="new-task"
             ref={inputRef}
             onKeyDown={onEnter}
             type="text"
-            className="border-0 outline-none flex-1 bg-transparent h-12 pl-4 pr-2 placeholder:text-slate-600"
+            className="flex-1 bg-transparent h-12 pl-4 pr-2 placeholder:text-slate-600 outline-none"
             placeholder="Add a task"
           />
 
-          <label className="sr-only" htmlFor="new-priority">Priority</label>
           <select
-            id="new-priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
             className="h-12 rounded-full bg-white/70 px-3 outline-none"
-            aria-label="Choose priority"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
+            <option value="critical">Critical</option>
           </select>
 
           <button
             type="button"
             onClick={onAdd}
-            className="border-none rounded-full bg-orange-600 hover:bg-orange-700 w-28 md:w-32 h-12 text-white font-medium"
+            className="rounded-full bg-orange-600 hover:bg-orange-700 w-28 md:w-32 h-12 text-white font-medium"
           >
             Add +
           </button>
         </div>
-
         <p className="mt-2 text-sm text-white/90">
           {remaining} task{remaining !== 1 ? "s" : ""} remaining
         </p>
       </section>
 
       {/* Filters */}
-      <div className="mt-5">
+      <div className="mt-5 w-full">
         <FilterBar />
       </div>
 
