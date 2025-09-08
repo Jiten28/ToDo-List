@@ -1,12 +1,13 @@
-import React from 'react'
-import Todo from './Components/Todo'
+import React from "react";
+import { TaskProvider } from "./context/TaskContext";
+import Home from "./pages/Home";
 
-const App = () => {
+export default function App() {
   return (
-    <div className='bg-sky-200 grid py-4 h-screen'>
-        <Todo />
-    </div>
-  )
+    <TaskProvider>
+      <div className="bg-sky-200 grid py-4 min-h-screen">
+        <Home />
+      </div>
+    </TaskProvider>
+  );
 }
-
-export default App
