@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useTasks } from "../context/TaskContext";
 import { filterByDateRange } from "../utils/dateUtils";
-import { Search, Filter } from "lucide-react"; // using lucide icons
+import { Search, Filter, SortAsc } from "lucide-react";
 
 export default function FilterBar() {
   const { tasks, filters, updateFilters, clearCompleted } = useTasks();
@@ -33,7 +33,7 @@ export default function FilterBar() {
         />
       </div>
 
-      {/* Filters */}
+      {/* Filters + Sort */}
       <div className="flex flex-wrap items-center gap-2 md:justify-end flex-1">
         <Filter className="w-5 h-5 text-slate-700 mr-1" />
 
@@ -84,6 +84,21 @@ export default function FilterBar() {
               : "Overdue"}
           </button>
         ))}
+
+        {/* Sort */}
+        <div className="flex items-center gap-1">
+          <SortAsc className="w-5 h-5 text-slate-700" />
+          <select
+            value={filters.sortBy || "createdAt"}
+            onChange={(e) => updateFilters({ sortBy: e.target.value })}
+            className="h-10 rounded-lg bg-white/70 px-3 outline-none"
+          >
+            <option value="createdAt">Created time</option>
+            <option value="deadline">Deadline</option>
+            <option value="priority">Priority</option>
+            <option value="category">Category</option>
+          </select>
+        </div>
 
         {/* Count + Clear */}
         <span className="text-sm text-slate-700">{visibleCount} shown</span>

@@ -24,7 +24,8 @@ export default function Home() {
       inputRef.current?.value || "",
       priority,
       finalCategory,
-      deadline || null
+      deadline || null,
+      new Date().toISOString()
     );
 
     if (inputRef.current) inputRef.current.value = "";
@@ -48,6 +49,30 @@ export default function Home() {
       filtered = filtered.filter((t) =>
         t.text.toLowerCase().includes(filters.search.toLowerCase())
       );
+
+    // Sorting
+    switch (filters.sortBy) {
+      case "deadline":
+        filtered.sort((a, b) =>
+          a.deadline && b.deadline
+            ? new Date(a.deadline) - new Date(b.deadline)
+            : a.deadline
+            ? -1
+            : 1
+        );
+        break;
+      case "priority":
+        const order = { critical: 1, high: 2, medium: 3, low: 4 };
+        filtered.sort((a, b) => order[a.priority] - order[b.priority]);
+        break;
+      case "category":
+        filtered.sort((a, b) => a.category.localeCompare(b.category));
+        break;
+      case "createdAt":
+      default:
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
     return filtered;
   }, [tasks, filters]);
 
@@ -123,7 +148,7 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Row 2: Unified Toolbar (Search + Filters) */}
+      {/* Row 2: Unified Toolbar */}
       <section className="mt-4 bg-blue-200 rounded-xl p-3">
         <FilterBar />
       </section>

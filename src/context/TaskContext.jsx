@@ -1,64 +1,69 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const TaskContext = createContext();
-const STORAGE_KEY = "todoApp.v3";
-
-const defaultFilters = {
-  dateRange: "all",     // "all" | "today" | "week" | "overdue"
-  priority: "all",
-  category: "all",
-  search: "",
-};
 
 export function TaskProvider({ children }) {
-  const [tasks, setTasks] = useState(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
+  const [tasks, setTasks] = useState(
+    JSON.parse(localStorage.getItem("todoApp")) || []
+  );
+
+  const [filters, setFilters] = useState({
+    search: "",
+    priority: "all",
+    category: "all",
+    dateRange: "all",
+    sortBy: "createdAt",
   });
 
-  const [filters, setFilters] = useState(defaultFilters);
-
-  const addTask = (text, priority = "low", category = "General", deadline = null) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    const newTask = {
-      id: crypto.randomUUID?.() ?? Date.now(),
-      text: trimmed,
-      isComplete: false,
-      priority,
-      category,
-      deadline, // ISO string or null
-      createdAt: new Date().toISOString(),
-    };
-    setTasks(prev => [...prev, newTask]);
-  };
-
-  const deleteTask = (id) => setTasks(prev => prev.filter(t => t.id !== id));
-  const toggleComplete = (id) => setTasks(prev =>
-    prev.map(t => (t.id === id ? { ...t, isComplete: !t.isComplete } : t))
-  );
-  const clearCompleted = () => setTasks(prev => prev.filter(t => !t.isComplete));
-  const updateFilters = (patch) => setFilters(prev => ({ ...prev, ...patch }));
-
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    localStorage.setItem("todoApp", JSON.stringify(tasks));
   }, [tasks]);
 
-  const value = useMemo(() => ({
-    tasks,
-    filters,
-    addTask,
-    deleteTask,
-    toggleComplete,
-    clearCompleted,
-    updateFilters,
-  }), [tasks, filters]);
+  const addTask = (text, priority, category, deadline, createdAt) => {
+    if (!text.trim()) return;
+    const newTask = {
+      id: Date.now(),
+      text,
+      priority,
+      category,
+      deadline: deadline || null,
+      createdAt: createdAt || new Date().toISOString(),
+      isComplete: false,
+    };
+    setTasks((prev) => [...prev, newTask]);
+  };
 
-  return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
+  const toggleComplete = (id) =>
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, isComplete: !t.isComplete } : t
+      )
+    );
+
+  const deleteTask = (id) =>
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+
+  const updateFilters = (updates) =>
+    setFilters((prev) => ({ ...prev, ...updates }));
+
+  const clearCompleted = () =>
+    setTasks((prev) => prev.filter((t) => !t.isComplete));
+
+  return (
+    <TaskContext.Provider
+      value={{
+        tasks,
+        addTask,
+        toggleComplete,
+        deleteTask,
+        filters,
+        updateFilters,
+        clearCompleted,
+      }}
+    >
+      {children}
+    </TaskContext.Provider>
+  );
 }
 
 export const useTasks = () => useContext(TaskContext);
