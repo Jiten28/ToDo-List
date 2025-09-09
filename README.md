@@ -1,102 +1,132 @@
-# **ToDo List Application**
+#  ToDo List Application
 
-### **Overview**
+### 📌 Overview
+The **ToDo List** is a modern and efficient task management application built using **React.js with Vite** and styled with **Tailwind CSS**.  
+It helps users organize their day by allowing them to **add, delete, filter, prioritize, and sort tasks** effortlessly.  
+The app features an intuitive UI, persistence with `localStorage`, and responsive design for desktop and mobile.
 
-The ToDo List is a modern and efficient task management application built using **React.js with Vite** and styled with **Tailwind CSS**. It helps users organize their day by allowing them to **add, edit, delete, prioritize, and filter tasks** effortlessly. The intuitive interface ensures an excellent user experience while maintaining strong functionality.
-
-<img width="1863" height="881" alt="image" src="https://github.com/user-attachments/assets/c72c697e-f1e6-4043-bb83-488c190a2080" />
-
-
----
-
-### **Key Features**
-
-* **Task Addition**: Add tasks with customizable priority levels (Low, Medium, High, Critical).
-* **Task Editing (Planned)**: Modify tasks to adapt to schedule changes.
-* **Task Deletion**: Remove completed or unnecessary tasks effortlessly.
-* **Completion Tracking**: Mark tasks as completed to visualize progress.
-* **Filter Options**:
-
-  * View tasks by **status** (all, completed, pending).
-  * Filter by **date** → *All, Today, This Week, Custom Date Range*.
-  * Filter by **priority** → *Low, Medium, High, Critical*.
-  * Search tasks by text.
-* **Priority Badges**: Each task displays a colored badge with a label for its priority.
-* **Persistent Storage**: Tasks are saved in **localStorage** and restored on reload.
-* **Responsive Design**: Fully responsive UI for desktop, tablet, and mobile.
+<img width="1863" height="878" alt="image" src="https://github.com/user-attachments/assets/e4f60e1f-8064-44ab-bf9a-a6654370d8c6" />
 
 ---
 
-### **Challenges**
+### ✨ Key Features
 
-* **State Management**: Achieved clean separation of **business logic** (tasks) and **UI state** (filters) using React Context API.
-* **Dynamic Filtering**: Ensured real-time re-rendering of tasks when filters change.
-* **User Experience**: Balanced multiple features with a simple, clutter-free UI.
-* **Accessibility**: Used semantic HTML, labels, and ARIA attributes for better usability.
+- **Task Management**
+  - ➕ Add tasks with **priority** (Low, Medium, High, Critical)
+  - 📂 Assign **categories** (General, Work, Personal, Study, or Custom)
+  - 📅 Add **deadline** (optional → "Not applicable" if none)
+  - ✅ Mark tasks complete
+  - ❌ Delete tasks
+
+- **Filtering & Search**
+  - 🔍 Search by task text
+  - ⚙️ Filter by:
+    - Priority (Low → Critical)
+    - Category
+    - Date (All, Today, This Week, Overdue)
+  - 📊 Sort tasks by:
+    - Deadline
+    - Priority
+    - Category
+    - Created time
+
+- **UI Enhancements**
+  - 🎨 **PriorityBadge**: color-coded labels (Critical → red, High → orange, Medium → yellow, Low → green)
+  - 📋 **FilterBar**: unified toolbar with search, filters, sort, and clear completed button
+  - 🕒 **Timestamps**: show created time + deadline
+  - 📱 Fully responsive for desktop and mobile
+
+- **Persistence**
+  - Tasks saved in **localStorage**, restored automatically on reload.
 
 ---
 
-### **Future Enhancements**
+### 🛠️ Challenges Solved
 
-* **Task Editing**: Inline editing of existing tasks.
-* **User Authentication**: Allow saving tasks across devices.
-* **Category Management**: Group tasks into categories (e.g., Work, Personal).
-* **Drag-and-Drop Interface**: Reorder tasks intuitively.
-* **Dark Mode**: Toggle between light and dark themes.
-* **Backend Integration**: Store tasks in a cloud database for multi-device sync.
-
----
-
-### **Technology Stack**
-
-* **Frontend**: React.js (with Vite)
-* **Styling**: Tailwind CSS
-* **State Management**: React Context API + Hooks
-* **Storage**: LocalStorage
+- **State Management** → Used **React Context API** for shared task & filter state.
+- **Dynamic Filtering** → Real-time filtering and sorting using memoized hooks.
+- **Responsive Layout** → Desktop:
+  - Row 1: Add Task
+  - Row 2: Search + FilterBar inline
+  - Row 3: Task list  
+  Mobile:
+  - Row 1: Add Task
+  - Row 2: Search + Filters stacked
+  - Row 3: Task list
+- **User Experience** → Balanced multiple features while keeping UI clean and accessible.
 
 ---
 
-### **Steps to Start the Project**
+### 🚀 Future Enhancements
 
-1. **Setup Environment**: Install Node.js and npm/yarn.
-2. **Create React Vite App**:
+- ✏️ Task Editing (inline editing of text, category, deadline)
+- 👤 Authentication (multi-device sync)
+- 🗂️ Category Management (custom categories persisted)
+- 📦 Drag-and-drop reordering
+- 🌙 Dark Mode
+- ☁️ Backend Integration (cloud DB sync)
+
+---
+
+### ⚙️ Technology Stack
+
+- **Frontend** → React.js (Vite)
+- **Styling** → Tailwind CSS
+- **Icons** → Lucide React
+- **State Management** → React Context API + Hooks
+- **Testing** → Jest + React Testing Library
+- **Storage** → localStorage
+
+---
+
+### 📦 Getting Started
+
+1. **Clone Repository**
+   ```bash
+   git clone <your-repo-url>
+   cd todo-list
+````
+
+2. **Install Dependencies**
 
    ```bash
-   npm create vite@latest todo-list --template react
-   cd todo-list
    npm install
    ```
-3. **Install Tailwind CSS**:
-   Follow the [Tailwind CSS installation guide](https://tailwindcss.com/docs/installation) for Vite.
-4. **Add Project Files**: Copy the `src/` structure with components, context, and utils.
-5. **Run the Application**:
+
+3. **Run App**
 
    ```bash
    npm run dev
    ```
-6. **Test the Application**: Verify adding, completing, deleting, and filtering tasks.
+
+4. **Run Tests**
+
+   ```bash
+   npm test
+   ```
 
 ---
 
-### **Libraries and Installation Commands**
+### 🧪 Tests Included
 
-1. **React + Vite**
-
-   ```bash
-   npm create vite@latest todo-list --template react
-   ```
-
-2. **Tailwind CSS**
-
-   * [Installation Guide](https://tailwindcss.com/docs/installation)
-   * Used for modern responsive styling.
-
-3. **React Icons (Optional)**
-
-   ```bash
-   npm install react-icons
-   ```
-
-   * For enhancing UI with icons.
+* `TaskCard.test.jsx` → verifies task render (text, critical badge, deadline)
+* `PriorityBadge.test.jsx` → ensures priority badges display correctly
+* `FilterBar.test.jsx` → ensures search and filters render
 
 ---
+Demo Link: https://to-do-list-six-ecru-67.vercel.app
+---
+
+👨‍💻 **Author:** Jiten Kumar
+📍 Hyderabad, India
+🎓 B.Tech CSE (AIML), Malla Reddy Institute of Technology and Science
+🌐 https://jitenkumarportfolio.netlify.app
+
+```
+
+---
+
+✅ This README is **submission-ready** and covers every required section.  
+
+👉 Do you also want me to **write a sample commit history plan** (like `feat: add FilterBar`, `feat: add PriorityBadge`, `feat: add sorting`), so your repo looks clean and professional when they check the commits?
+```
