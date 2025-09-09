@@ -1,38 +1,43 @@
 import React, { useMemo } from "react";
 import { useTasks } from "../context/TaskContext";
-import { filterByDateRange, filterByCustomRange } from "../utils/dateUtils";
+import { filterByDateRange } from "../utils/dateUtils";
+import { Search, Filter } from "lucide-react"; // using lucide icons
 
 export default function FilterBar() {
   const { tasks, filters, updateFilters, clearCompleted } = useTasks();
 
   const visibleCount = useMemo(() => {
-    let byDate = filterByDateRange(tasks, filters.dateRange);
-    if (filters.dateRange === "custom") {
-      byDate = filterByCustomRange(tasks, filters.customStart, filters.customEnd);
-    }
-    const byPriority =
-      filters.priority === "all"
-        ? byDate
-        : byDate.filter((t) => t.priority === filters.priority);
-    const bySearch = filters.search
-      ? byPriority.filter((t) =>
-          t.text.toLowerCase().includes(filters.search.toLowerCase())
-        )
-      : byPriority;
-    return bySearch.length;
+    let filtered = filterByDateRange(tasks, filters.dateRange);
+    if (filters.priority !== "all")
+      filtered = filtered.filter((t) => t.priority === filters.priority);
+    if (filters.category !== "all")
+      filtered = filtered.filter((t) => t.category === filters.category);
+    if (filters.search)
+      filtered = filtered.filter((t) =>
+        t.text.toLowerCase().includes(filters.search.toLowerCase())
+      );
+    return filtered.length;
   }, [tasks, filters]);
 
   return (
-    <section className="bg-blue-200 rounded-xl p-4 w-full flex flex-col gap-4">
-      {/* Row 1: Search + Priority */}
-      <div className="flex flex-col sm:flex-row gap-3">
+    <section className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between w-full">
+      {/* Search */}
+      <div className="flex items-center gap-2 flex-1">
+        <Search className="w-5 h-5 text-slate-700" />
         <input
           type="search"
-          placeholder="Search…"
+          placeholder="Search tasks…"
           value={filters.search}
           onChange={(e) => updateFilters({ search: e.target.value })}
-          className="h-10 flex-1 rounded-lg bg-white/70 px-3 outline-none"
+          className="h-10 w-full rounded-lg bg-white/70 px-3 outline-none"
         />
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 md:justify-end flex-1">
+        <Filter className="w-5 h-5 text-slate-700 mr-1" />
+
+        {/* Priority */}
         <select
           value={filters.priority}
           onChange={(e) => updateFilters({ priority: e.target.value })}
@@ -44,12 +49,22 @@ export default function FilterBar() {
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
-      </div>
 
-      {/* Row 2: Date filters */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-slate-700">Date:</span>
-        {["all", "today", "week", "custom"].map((r) => (
+        {/* Category */}
+        <select
+          value={filters.category}
+          onChange={(e) => updateFilters({ category: e.target.value })}
+          className="h-10 rounded-lg bg-white/70 px-3 outline-none"
+        >
+          <option value="all">All categories</option>
+          <option value="General">General</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Study">Study</option>
+        </select>
+
+        {/* Date */}
+        {["all", "today", "week", "overdue"].map((r) => (
           <button
             key={r}
             type="button"
@@ -65,38 +80,19 @@ export default function FilterBar() {
               : r === "today"
               ? "Today"
               : r === "week"
-              ? "This Week"
-              : "Custom"}
+              ? "This week"
+              : "Overdue"}
           </button>
         ))}
 
-        {filters.dateRange === "custom" && (
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              value={filters.customStart || ""}
-              onChange={(e) => updateFilters({ customStart: e.target.value })}
-              className="h-9 rounded-lg bg-white/70 px-2 outline-none"
-            />
-            <input
-              type="date"
-              value={filters.customEnd || ""}
-              onChange={(e) => updateFilters({ customEnd: e.target.value })}
-              className="h-9 rounded-lg bg-white/70 px-2 outline-none"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Row 3: Count + Clear */}
-      <div className="flex items-center justify-between">
+        {/* Count + Clear */}
         <span className="text-sm text-slate-700">{visibleCount} shown</span>
         <button
           type="button"
           onClick={clearCompleted}
           className="px-3 h-9 rounded-full text-sm font-semibold bg-red-600 text-white hover:bg-red-700"
         >
-          Clear completed
+          Clear
         </button>
       </div>
     </section>

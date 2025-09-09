@@ -3,17 +3,35 @@ import todo_icon from "../assets/todo_icon.png";
 import TaskCard from "../components/TaskCard";
 import FilterBar from "../components/FilterBar";
 import { useTasks } from "../context/TaskContext";
-import { filterByDateRange, filterByCustomRange } from "../utils/dateUtils";
+import { filterByDateRange } from "../utils/dateUtils";
 
 export default function Home() {
   const { tasks, addTask, toggleComplete, deleteTask, filters } = useTasks();
   const inputRef = useRef(null);
+
   const [priority, setPriority] = useState("low");
+  const [category, setCategory] = useState("General");
+  const [customCategory, setCustomCategory] = useState("");
+  const [deadline, setDeadline] = useState("");
 
   const onAdd = () => {
-    addTask(inputRef.current?.value || "", priority);
+    const finalCategory =
+      category === "Custom" && customCategory.trim() !== ""
+        ? customCategory
+        : category;
+
+    addTask(
+      inputRef.current?.value || "",
+      priority,
+      finalCategory,
+      deadline || null
+    );
+
     if (inputRef.current) inputRef.current.value = "";
     setPriority("low");
+    setCategory("General");
+    setCustomCategory("");
+    setDeadline("");
   };
 
   const onEnter = (e) => {
@@ -21,74 +39,97 @@ export default function Home() {
   };
 
   const visibleTasks = useMemo(() => {
-    let byDate = filterByDateRange(tasks, filters.dateRange);
-    if (filters.dateRange === "custom") {
-      byDate = filterByCustomRange(tasks, filters.customStart, filters.customEnd);
-    }
-    const byPriority =
-      filters.priority === "all"
-        ? byDate
-        : byDate.filter((t) => t.priority === filters.priority);
-    const bySearch = filters.search
-      ? byPriority.filter((t) =>
-          t.text.toLowerCase().includes(filters.search.toLowerCase())
-        )
-      : byPriority;
-    return bySearch;
+    let filtered = filterByDateRange(tasks, filters.dateRange);
+    if (filters.priority !== "all")
+      filtered = filtered.filter((t) => t.priority === filters.priority);
+    if (filters.category !== "all")
+      filtered = filtered.filter((t) => t.category === filters.category);
+    if (filters.search)
+      filtered = filtered.filter((t) =>
+        t.text.toLowerCase().includes(filters.search.toLowerCase())
+      );
+    return filtered;
   }, [tasks, filters]);
 
   const remaining = tasks.filter((t) => !t.isComplete).length;
 
   return (
-    <main className="bg-blue-400 place-self-center w-11/12 max-w-md flex flex-col p-6 md:p-7 min-h-[560px] rounded-lg shadow-lg mx-auto">
-      {/* Title */}
-      <header className="flex items-center mt-3 gap-2">
+    <main className="bg-blue-400 place-self-center w-11/12 max-w-6xl flex flex-col p-6 md:p-8 min-h-[600px] rounded-lg shadow-lg mx-auto">
+      {/* Header */}
+      <header className="flex items-center gap-2 mb-4">
         <img className="w-8" src={todo_icon} alt="" />
         <h1 className="text-3xl font-semibold">To-do List</h1>
       </header>
 
-      {/* Add form */}
-      <section className="mt-6">
-        <div className="flex items-stretch gap-2 bg-blue-200 rounded-full p-1">
-          <input
-            ref={inputRef}
-            onKeyDown={onEnter}
-            type="text"
-            className="flex-1 bg-transparent h-12 pl-4 pr-2 placeholder:text-slate-600 outline-none"
-            placeholder="Add a task"
-          />
-
+      {/* Row 1: Add Task (full width) */}
+      <section className="bg-blue-200 rounded-xl p-3 w-full">
+        <input
+          ref={inputRef}
+          onKeyDown={onEnter}
+          type="text"
+          placeholder="Add a task"
+          className="border-0 outline-none bg-white/70 rounded-md h-10 px-3 w-full mb-2"
+        />
+        <div className="flex flex-wrap gap-2">
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
-            className="h-12 rounded-full bg-white/70 px-3 outline-none"
+            className="h-10 rounded-lg bg-white/70 px-3 outline-none"
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">Low priority</option>
+            <option value="medium">Medium priority</option>
+            <option value="high">High priority</option>
             <option value="critical">Critical</option>
           </select>
 
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="h-10 rounded-lg bg-white/70 px-3 outline-none"
+          >
+            <option value="General">General</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Study">Study</option>
+            <option value="Custom">Custom</option>
+          </select>
+
+          {category === "Custom" && (
+            <input
+              type="text"
+              placeholder="Enter category"
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="h-10 rounded-lg bg-white/70 px-3 outline-none flex-1"
+            />
+          )}
+
+          <input
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            className="h-10 rounded-lg bg-white/70 px-3 outline-none"
+          />
+
           <button
-            type="button"
             onClick={onAdd}
-            className="rounded-full bg-orange-600 hover:bg-orange-700 w-28 md:w-32 h-12 text-white font-medium"
+            className="rounded-lg bg-orange-600 hover:bg-orange-700 px-4 h-10 text-white font-medium"
           >
             Add +
           </button>
         </div>
-        <p className="mt-2 text-sm text-white/90">
+        <p className="text-sm text-slate-700 mt-2">
           {remaining} task{remaining !== 1 ? "s" : ""} remaining
         </p>
       </section>
 
-      {/* Filters */}
-      <div className="mt-5 w-full">
+      {/* Row 2: Unified Toolbar (Search + Filters) */}
+      <section className="mt-4 bg-blue-200 rounded-xl p-3">
         <FilterBar />
-      </div>
+      </section>
 
-      {/* Task list */}
-      <section className="mt-4">
+      {/* Row 3: Task list */}
+      <section className="mt-4 flex-1">
         {visibleTasks.length === 0 ? (
           <p className="text-white/90 text-center mt-6">No tasks to show.</p>
         ) : (
