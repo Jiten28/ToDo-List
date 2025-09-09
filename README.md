@@ -4,7 +4,8 @@
 
 The ToDo List is a modern and efficient task management application built using **React.js with Vite** and styled with **Tailwind CSS**. It helps users organize their day by allowing them to **add, edit, delete, prioritize, and filter tasks** effortlessly. The intuitive interface ensures an excellent user experience while maintaining strong functionality.
 
-![image](https://github.com/user-attachments/assets/ee972f64-7324-4785-a4b3-865483592b33)
+<img width="1863" height="881" alt="image" src="https://github.com/user-attachments/assets/c72c697e-f1e6-4043-bb83-488c190a2080" />
+
 
 ---
 
